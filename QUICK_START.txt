@@ -1,0 +1,72 @@
+╔═══════════════════════════════════════════════════════════════════╗
+║                    CHESSHACKER QUICK START                        ║
+║                   Meta Glasses Chess Assistant                    ║
+╠═══════════════════════════════════════════════════════════════════╣
+║                                                                   ║
+║  📂 Location: ~/chesshacker-sandbox                              ║
+║  🌐 Web UI: http://127.0.0.1:8000                                ║
+║  📖 Docs: ~/chesshacker-sandbox/SETUP_COMPLETE.md                ║
+║                                                                   ║
+╠═══════════════════════════════════════════════════════════════════╣
+║  SETUP (One Time)                                                 ║
+╠═══════════════════════════════════════════════════════════════════╣
+║                                                                   ║
+║  1. Install BlackHole 2ch (needs sudo):                          ║
+║     brew install blackhole-2ch                                    ║
+║                                                                   ║
+║  2. Configure API keys:                                           ║
+║     cd ~/chesshacker-sandbox                                      ║
+║     npx chesshacker setup                                         ║
+║                                                                   ║
+║  3. Grant Screen Recording permission:                            ║
+║     System Settings → Privacy → Screen Recording → Terminal      ║
+║                                                                   ║
+║  4. WhatsApp audio setup:                                         ║
+║     In call: Set microphone to "BlackHole 2ch"                   ║
+║                                                                   ║
+╠═══════════════════════════════════════════════════════════════════╣
+║  USAGE                                                            ║
+╠═══════════════════════════════════════════════════════════════════╣
+║                                                                   ║
+║  Play as white:                                                   ║
+║  $ npx chesshacker run --color white                             ║
+║                                                                   ║
+║  Play as black:                                                   ║
+║  $ npx chesshacker run --color black                             ║
+║                                                                   ║
+║  System check:                                                    ║
+║  $ npx chesshacker doctor                                        ║
+║                                                                   ║
+║  Test call:                                                       ║
+║  $ npx chesshacker test-call                                     ║
+║                                                                   ║
+╠═══════════════════════════════════════════════════════════════════╣
+║  OPTIONS                                                          ║
+╠═══════════════════════════════════════════════════════════════════╣
+║                                                                   ║
+║  --model         openai (default) | claude                       ║
+║  --max-cost      Maximum spend in $ (default: 10)                ║
+║  --think-time    Stockfish ms (default: 500)                     ║
+║  --fen           Custom starting position                         ║
+║                                                                   ║
+╠═══════════════════════════════════════════════════════════════════╣
+║  COSTS                                                            ║
+╠═══════════════════════════════════════════════════════════════════╣
+║                                                                   ║
+║  OpenAI gpt-6.1-sol: ~$0.014/frame (4-5s latency)               ║
+║  Claude Opus 5.5:    ~$0.04/frame  (3.6-6.3s latency)          ║
+║                                                                   ║
+║  ~10 seconds from opponent move to spoken response               ║
+║                                                                   ║
+╠═══════════════════════════════════════════════════════════════════╣
+║  STATUS                                                           ║
+╠═══════════════════════════════════════════════════════════════════╣
+║                                                                   ║
+║  ✅ 1,800+ lines TypeScript                                      ║
+║  ✅ 8-step pipeline built                                        ║
+║  ✅ Compiled successfully                                        ║
+║  ✅ Stockfish installed                                          ║
+║  ⚠️  BlackHole needs install (sudo)                              ║
+║  ⚠️  API keys need config                                        ║
+║                                                                   ║
+╚═══════════════════════════════════════════════════════════════════╝
