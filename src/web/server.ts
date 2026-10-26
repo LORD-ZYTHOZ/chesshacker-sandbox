@@ -101,98 +101,334 @@ export class WebServer {
     return `<!DOCTYPE html>
 <html>
 <head>
-  <title>Chesshacker Control Panel</title>
+  <title>♟️ Chesshacker - Meta Glasses Assistant</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    @keyframes gradient {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.6; }
+    }
+
+    @keyframes slideIn {
+      from { transform: translateX(-10px); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background: #1a1a1a;
+      font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: linear-gradient(-45deg, #0a0a0a, #1a1a2e, #16213e, #0f3460);
+      background-size: 400% 400%;
+      animation: gradient 15s ease infinite;
       color: #fff;
       padding: 20px;
+      min-height: 100vh;
     }
-    .container { max-width: 1200px; margin: 0 auto; }
-    h1 { margin-bottom: 20px; font-size: 24px; }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      animation: fadeIn 0.6s ease;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 40px;
+      padding: 30px;
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+
+    h1 {
+      font-size: 48px;
+      font-weight: 800;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 10px;
+      letter-spacing: -1px;
+    }
+
+    .subtitle {
+      color: #999;
+      font-size: 16px;
+      font-weight: 300;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
     .stats {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 15px;
-      margin-bottom: 30px;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin-bottom: 40px;
     }
+
     .stat-card {
-      background: #2a2a2a;
-      padding: 20px;
-      border-radius: 8px;
-      border: 1px solid #3a3a3a;
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      padding: 30px;
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
     }
-    .stat-label { color: #888; font-size: 12px; margin-bottom: 5px; }
-    .stat-value { font-size: 24px; font-weight: 600; }
-    .board {
-      background: #2a2a2a;
-      padding: 20px;
-      border-radius: 8px;
-      border: 1px solid #3a3a3a;
+
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #667eea, #764ba2);
+      transform: scaleX(0);
+      transition: transform 0.3s ease;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 20px 40px rgba(102, 126, 234, 0.3);
+      border-color: rgba(102, 126, 234, 0.5);
+    }
+
+    .stat-card:hover::before {
+      transform: scaleX(1);
+    }
+
+    .stat-label {
+      color: #999;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+
+    .stat-value {
+      font-size: 36px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #fff 0%, #999 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .stat-value.pulse {
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
       margin-bottom: 20px;
     }
-    .board-state {
-      font-family: monospace;
-      font-size: 14px;
-      line-height: 1.5;
-      white-space: pre;
+
+    @media (max-width: 1000px) {
+      .main-grid {
+        grid-template-columns: 1fr;
+      }
     }
+
+    .board {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      padding: 30px;
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .board h2 {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #667eea;
+    }
+
+    .board-state {
+      font-family: 'SF Mono', 'Monaco', 'Courier New', monospace;
+      font-size: 18px;
+      line-height: 1.8;
+      white-space: pre;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 20px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      overflow-x: auto;
+    }
+
+    .fen-display {
+      margin-top: 20px;
+      padding: 15px;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 8px;
+      font-size: 12px;
+      font-family: monospace;
+      color: #999;
+      word-break: break-all;
+    }
+
     .controls {
       display: flex;
-      gap: 10px;
+      gap: 15px;
       margin-bottom: 20px;
+      flex-wrap: wrap;
     }
+
     button {
-      background: #0066cc;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       color: white;
       border: none;
-      padding: 10px 20px;
-      border-radius: 6px;
+      padding: 14px 28px;
+      border-radius: 12px;
       cursor: pointer;
       font-size: 14px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+      letter-spacing: 0.5px;
     }
-    button:hover { background: #0052a3; }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
     button:disabled {
-      background: #555;
+      background: rgba(255, 255, 255, 0.1);
       cursor: not-allowed;
+      box-shadow: none;
     }
+
     .events {
-      background: #2a2a2a;
-      padding: 20px;
-      border-radius: 8px;
-      border: 1px solid #3a3a3a;
-      max-height: 400px;
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      padding: 30px;
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      max-height: 500px;
       overflow-y: auto;
     }
+
+    .events::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .events::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 10px;
+    }
+
+    .events::-webkit-scrollbar-thumb {
+      background: rgba(102, 126, 234, 0.5);
+      border-radius: 10px;
+    }
+
+    .events::-webkit-scrollbar-thumb:hover {
+      background: rgba(102, 126, 234, 0.8);
+    }
+
+    .events h2 {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #667eea;
+    }
+
     .event {
-      padding: 10px;
-      border-bottom: 1px solid #3a3a3a;
-      font-size: 13px;
+      padding: 15px;
+      margin-bottom: 10px;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 8px;
+      border-left: 3px solid #667eea;
+      animation: slideIn 0.3s ease;
+      transition: all 0.2s ease;
     }
-    .event:last-child { border-bottom: none; }
+
+    .event:hover {
+      background: rgba(102, 126, 234, 0.1);
+      transform: translateX(5px);
+    }
+
+    .event-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
     .event-stage {
-      color: #0066cc;
-      font-weight: 600;
-      margin-right: 10px;
+      color: #667eea;
+      font-weight: 700;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
     }
+
     .event-time {
       color: #666;
       font-size: 11px;
+      font-family: monospace;
+    }
+
+    .event-data {
+      color: #aaa;
+      font-size: 12px;
+      font-family: 'SF Mono', monospace;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 10px;
+      border-radius: 6px;
+      margin-top: 8px;
+      overflow-x: auto;
+    }
+
+    .status-running {
+      color: #4ade80;
+    }
+
+    .status-stopped {
+      color: #f87171;
+    }
+
+    .chess-piece {
+      display: inline-block;
+      font-size: 24px;
+      margin: 0 2px;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>🔍 Chesshacker Control Panel</h1>
+    <div class="header">
+      <h1>♟️ CHESSHACKER</h1>
+      <div class="subtitle">Meta Glasses Chess Assistant</div>
+    </div>
 
     <div class="stats" id="stats">
       <div class="stat-card">
-        <div class="stat-label">Status</div>
-        <div class="stat-value" id="status">Running</div>
+        <div class="stat-label">System Status</div>
+        <div class="stat-value pulse" id="status">Running</div>
       </div>
       <div class="stat-card">
         <div class="stat-label">Frames Processed</div>
@@ -203,47 +439,56 @@ export class WebServer {
         <div class="stat-value" id="cost">$0.00</div>
       </div>
       <div class="stat-card">
-        <div class="stat-label">Turn</div>
+        <div class="stat-label">Current Turn</div>
         <div class="stat-value" id="turn">White</div>
       </div>
     </div>
 
     <div class="controls">
-      <button onclick="undo()">Undo Move</button>
-      <button onclick="refresh()">Refresh</button>
+      <button onclick="undo()">⟲ Undo Move</button>
+      <button onclick="refresh()">⟳ Refresh</button>
+      <button onclick="togglePause()">⏸ Pause</button>
     </div>
 
-    <div class="board">
-      <h2 style="margin-bottom: 15px;">Board State</h2>
-      <div class="board-state" id="board">Loading...</div>
-      <div style="margin-top: 15px; color: #888; font-size: 13px;">
-        FEN: <span id="fen">-</span>
+    <div class="main-grid">
+      <div class="board">
+        <h2>♔ Board State</h2>
+        <div class="board-state" id="board">Loading...</div>
+        <div class="fen-display">
+          <strong>FEN:</strong> <span id="fen">-</span>
+        </div>
       </div>
-    </div>
 
-    <div class="events">
-      <h2 style="margin-bottom: 15px;">Event Log</h2>
-      <div id="events">Loading...</div>
+      <div class="events">
+        <h2>📊 Event Stream</h2>
+        <div id="events">Loading...</div>
+      </div>
     </div>
   </div>
 
   <script>
+    let autoRefresh = true;
+
     async function refresh() {
       try {
         // Get stats
         const statsRes = await fetch('/api/stats');
         const stats = await statsRes.json();
 
-        document.getElementById('status').textContent = stats.running ? 'Running' : 'Stopped';
-        document.getElementById('frames').textContent = stats.frameCount;
+        const statusEl = document.getElementById('status');
+        const isRunning = stats.running;
+        statusEl.textContent = isRunning ? 'RUNNING' : 'STOPPED';
+        statusEl.className = 'stat-value pulse ' + (isRunning ? 'status-running' : 'status-stopped');
+
+        document.getElementById('frames').textContent = stats.frameCount.toLocaleString();
         document.getElementById('cost').textContent = '$' + stats.totalCost.toFixed(2);
-        document.getElementById('turn').textContent = stats.gameState.turn === 'w' ? 'White' : 'Black';
+        document.getElementById('turn').textContent = stats.gameState.turn === 'w' ? '⚪ White' : '⚫ Black';
         document.getElementById('fen').textContent = stats.gameState.fen;
 
         // Get board state
         const stateRes = await fetch('/api/state');
         const state = await stateRes.json();
-        document.getElementById('board').textContent = formatBoard(state.fen);
+        document.getElementById('board').innerHTML = formatBoard(state.fen);
 
         // Get events
         const eventsRes = await fetch('/api/events');
@@ -256,15 +501,22 @@ export class WebServer {
     }
 
     function formatBoard(fen) {
+      const pieceMap = {
+        'K': '♔', 'Q': '♕', 'R': '♖', 'B': '♗', 'N': '♘', 'P': '♙',
+        'k': '♚', 'q': '♛', 'r': '♜', 'b': '♝', 'n': '♞', 'p': '♟'
+      };
+
       const rows = fen.split(' ')[0].split('/');
       let board = '';
+
       for (const row of rows) {
         let line = '';
         for (const char of row) {
           if (isNaN(char)) {
-            line += char + ' ';
+            const piece = pieceMap[char] || char;
+            line += '<span class="chess-piece">' + piece + '</span> ';
           } else {
-            line += '. '.repeat(parseInt(char));
+            line += '· '.repeat(parseInt(char));
           }
         }
         board += line.trim() + '\\n';
@@ -274,13 +526,21 @@ export class WebServer {
 
     function renderEvents(events) {
       const container = document.getElementById('events');
+      if (events.length === 0) {
+        container.innerHTML = '<div style="color: #666; text-align: center; padding: 40px;">No events yet</div>';
+        return;
+      }
+
       container.innerHTML = events.map(e => {
         const time = new Date(e.timestamp).toLocaleTimeString();
+        const dataStr = JSON.stringify(e.data, null, 2);
         return \`
           <div class="event">
-            <span class="event-stage">\${e.stage}</span>
-            <span class="event-time">\${time}</span>
-            <div style="margin-top: 5px; color: #aaa;">\${JSON.stringify(e.data)}</div>
+            <div class="event-header">
+              <span class="event-stage">\${e.stage}</span>
+              <span class="event-time">\${time}</span>
+            </div>
+            <div class="event-data">\${dataStr}</div>
           </div>
         \`;
       }).join('');
@@ -295,8 +555,17 @@ export class WebServer {
       }
     }
 
+    function togglePause() {
+      autoRefresh = !autoRefresh;
+      const btn = event.target;
+      btn.textContent = autoRefresh ? '⏸ Pause' : '▶️ Resume';
+    }
+
     // Auto-refresh every 2 seconds
-    setInterval(refresh, 2000);
+    setInterval(() => {
+      if (autoRefresh) refresh();
+    }, 2000);
+
     refresh();
   </script>
 </body>
